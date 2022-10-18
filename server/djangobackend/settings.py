@@ -29,7 +29,7 @@ DEBUG = True
 
 APPEND_SLASH = True
 
-ALLOWED_HOSTS = ["fullstackcapstone.eu-de.mybluemix.net"]
+ALLOWED_HOSTS = ["fullstackcapstone.eu-de.mybluemix.net","localhost"]
 
 
 # Application definition
