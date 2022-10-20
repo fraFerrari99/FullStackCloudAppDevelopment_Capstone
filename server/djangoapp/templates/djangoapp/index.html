@@ -21,7 +21,21 @@
   min-height: 100vh;
   margin-left: inherit !important;
 }
+table{
 
+border:1px solid black;
+}
+thead{
+font-weight:800;
+border:1px solid black;
+}
+tbody{
+border:1px solid black;
+}
+
+tbody tr{
+border:1px solid black;
+}
 
 main {
   flex: 1;
@@ -83,7 +97,33 @@ main {
                     </div>
                 </nav>
             </header>
-            <main></main>
+            <main>
+                {% if dealers %}
+                <table>
+                    <thead>
+                        <tr>
+                          <td>Full Name</td>
+                          <td>State</td>
+                          <td>City</td>
+                          <td>Address</td>            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dealer in dealers %}
+                            <tr>
+                                <td>{{dealer.full_name}}</td>
+                                <td>{{dealer.state}}</td>
+                                <td>{{dealer.city}}</td>
+                                <td>{{dealer.address}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <h5>No dealers available, I'm sorry!</h5>
+                {% endif %}
+
+            </main>
             <footer>
                 <p class="mb10">Contact us</p>
                 <p><i class="fa fa-location-arrow"></i> Bologna, Via Azzurra,58 Italy </p>
@@ -94,7 +134,7 @@ main {
  
     
     <!--Add a dealer table here -->
-        
+    
     </body>
 
 </html>

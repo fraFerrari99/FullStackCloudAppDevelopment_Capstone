@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealers_by_state
+from .restapis import *
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -78,7 +78,7 @@ def get_dealerships(request):
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/dealership-package/get-dealership.json"
         dealerships = get_dealers_from_cf(url)
         context = {"dealers":dealerships}
-        return render(request,"djangoapp/dealers.html",context)
+        return render(request,"djangoapp/index.html",context)
         
 
 def get_dealerships_by_state(request,state):
@@ -88,17 +88,41 @@ def get_dealerships_by_state(request,state):
         context = {"dealers":dealerships}
         return render(request,"djangoapp/dealers.html",context)
         
+def get_dealer_id(request,dealer_id):
+    if request.method == "GET":
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/dealership-package/get-dealership.json?id="+dealer_id
+        dealer = get_dealer_by_id(url,dealer_id)
+        if dealer:
+            return HttpResponse("<h1>"+dealer[0].full_name+"</h1>")
+        else:
+            return HttpResponse("<h1>No dealer with that id!</h1>")
+
+def get_dealer_details(request,dealerId):
+    if request.method == "GET":
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/review-package/get-review.json?dealerId="+dealerId
+        dealer_review = get_dealer_reviews_from_cf(url, dealerId)
+        return render(request,"djangoapp/review.html",context={"reviews":dealer_review,"dealerId":dealerId})
 
 
+def add_review(request):
+    if request.method == "POST" and "login" not in request.POST:
+            review = {}
+            review["id"] = request.POST["id"]
+            review["name"] = request.POST["name"]
+            review["dealership"] = request.POST["dealership"]
+            review["review"] = request.POST["review"]
+            review["car_make"] = request.POST["car_make"]
+            review["car_model"] = request.POST["car_model"]
+            review["car_year"] = request.POST["car_year"]
+            review["purchase"] = request.POST["purchase"]
+            review["purchase_date"] =  request.POST["purchase_date"]
+            review["another"] = request.POST["another"]
+            json_payload = {}
+            json_payload["review"] = review
+            url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/review-package/post-review.json"
+            status_code = post_request(url, json_payload)
+            return render(request,"djangoapp/add_review.html",context={"status_code":status_code})
+    else: 
+        return render(request,"djangoapp/add_review.html")
 
-
-
-
-# Create a `get_dealer_details` view to render the reviews of a dealer
-# def get_dealer_details(request, dealer_id):
-# ...
-
-# Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
 

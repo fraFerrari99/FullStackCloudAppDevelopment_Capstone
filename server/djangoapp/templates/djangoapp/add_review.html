@@ -2,15 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    {% load static %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
+    <title>Add Review</title>
 </head>
-    <body>
-    <!--Add review form here -->
-    </body>
+<body>
+
+    {% if not user.is_authenticated %}
+        <h3>You need to sign in to add review! Click on this button to go the homepage and login!</h3>
+        <a class="btn btn-primary" href="{% url 'djangoapp:index' %}">Go to the homepage</a>
+    {% else %}
+    <form method="POST" action="{% url 'djangoapp:add_review' %}" style="margin-left:50px">
+        {% csrf_token %}
+        <h3>Add Review Form</h3>
+        <hr>
+        <div class="form-group">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" placeholder="ID" name="id">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" placeholder="Name" name="name">
+            <label for="dealership">Dealership</label>
+            <input type="text" class="form-control" placeholder="Dealership" name="dealership">
+            <label for="review">Review</label>
+            <input type="text" class="form-control" placeholder="Review" name="review">
+            <label for="purchase">Purchase</label>
+            <input type="text" class="form-control" placeholder="Purchase" name="purchase">
+            <label for="purchase_date">Purchase Date</label>
+            <input type="text" class="form-control" placeholder="Purchase Date" name="purchase_date">
+            <label for="another">Another</label>
+            <input type="text" class="form-control" placeholder="False or True" name="another">
+            <label for="car_make">Car Make</label>
+            <input type="text" class="form-control" placeholder="Car Make" name="car_make">
+            <label for="car_model">Car Model</label>
+            <input type="text" class="form-control" placeholder="Car Model" name="car_model">
+            <label for="car_year">Car Year</label>
+            <input type="text" class="form-control" placeholder="Car Year" name="car_year">
+            <br>
+            {% if status_code %}
+              {% if status_code == 200 %}
+                <div class="alert alert-success" role="alert">Review posted successfully!</div>
+              {% else %}
+              <div class="alert alert-danger" role="alert">Error in posting the review!</div>
+              {% endif %}
+            {% endif %}
+            <button class="btn btn-primary" type="submit">Add Review</button>
+        </div>
+    </form>
+    {% endif %}
+</body>
 </html>
