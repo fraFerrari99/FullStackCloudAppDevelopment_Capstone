@@ -101,7 +101,7 @@ def get_dealer_details(request,dealerId):
     if request.method == "GET":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/review-package/get-review.json?dealerId="+dealerId
         dealer_review = get_dealer_reviews_from_cf(url, dealerId)
-        return render(request,"djangoapp/review.html",context={"reviews":dealer_review,"dealerId":dealerId})
+        return render(request,"djangoapp/dealer_details.html",context={"reviews":dealer_review,"dealerId":dealerId})
 
 
 def add_review(request):
