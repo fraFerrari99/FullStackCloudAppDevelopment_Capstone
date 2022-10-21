@@ -87,38 +87,35 @@ def post_review(args):
         purchase = False
     else:
         purchase = True
-    review_create = Document(
-        id=str(retrieve_arg["id"]),
-        name=retrieve_arg["name"],
-        dealership=int(retrieve_arg["dealership"]),
-        review=retrieve_arg["review"],
-        purchase=purchase,
-        another=retrieve_arg["another"],
-        purchase_date=retrieve_arg["purchase_date"],
-        car_make=retrieve_arg["car_make"],
-        car_model=retrieve_arg["car_model"],
-        car_year=int(retrieve_arg["car_year"])
-        )
+    if "id" in retrieve_arg and  "another" in retrieve_arg:
+        review_create = Document(
+            id=str(retrieve_arg["id"]),
+            name=retrieve_arg["name"],
+            dealership=int(retrieve_arg["dealership"]),
+            review=retrieve_arg["review"],
+            purchase=purchase,
+            another=retrieve_arg["another"],
+            purchase_date=retrieve_arg["purchase_date"],
+            car_make=retrieve_arg["car_make"],
+            car_model=retrieve_arg["car_model"],
+            car_year=int(retrieve_arg["car_year"])
+            )
+    else:
+        review_create = Document(
+            name=retrieve_arg["name"],
+            dealership=int(retrieve_arg["dealership"]),
+            review=retrieve_arg["review"],
+            purchase=purchase,
+            purchase_date=retrieve_arg["purchase_date"],
+            car_make=retrieve_arg["car_make"],
+            car_model=retrieve_arg["car_model"],
+            car_year=int(retrieve_arg["car_year"])
+            )
 
     response = service.put_document(db="reviews",
                                     doc_id=str(uuid.uuid4()),
                                     document=review_create).get_result()
     return response
 
-review_to_create = {
-    "review": 
-    { "id": "1114", 
-    "name": "Upkar Lidder", 
-    "dealership": 15, 
-    "review": "Great service!", 
-    "purchase": "false", 
-    "another": "field", 
-    "purchase_date": "02/16/2021", 
-    "car_make": "Audi", 
-    "car_model": "Car", 
-    "car_year": 2021 
-    }
-}
-post_review(review_to_create)
 
 

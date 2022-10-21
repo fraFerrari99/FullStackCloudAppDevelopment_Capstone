@@ -99,7 +99,7 @@ main {
                         {% for dealer in dealers %}
                             <tr>
                                 <td>{{dealer.id}}</td>
-                                <td><a href="{% url 'djangoapp:dealer_details' dealer.id %}">{{dealer.full_name}}</a></td>
+                                <td><a href="{% url 'djangoapp:dealer_details' dealerId=dealer.id dealer_name=dealer.full_name %}">{{dealer.full_name}}</a></td>
                                 <td>{{dealer.city}}</td>
                                 <td>{{dealer.zip}}</td>
                                 <td>{{dealer.address}}</td>
@@ -125,7 +125,10 @@ main {
     </body>
     <script>
         $(function() {
-          $('#table').bootstrapTable()
+          $('#table').bootstrapTable({
+            pagination: true
+          }
+          )
         })
       </script>
 

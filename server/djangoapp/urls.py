@@ -18,8 +18,8 @@ urlpatterns = [
     path(route='registration',view=views.registration_request,name='registration'),
     path(route='dealers/<str:state>',view=views.get_dealerships_by_state,name="dealer_state"),
     path(route='dealers/<str:dealer_id>',view=views.get_dealer_id,name='dealer_id'),
-    path(route='review/<str:dealerId>',view=views.get_dealer_details,name='dealer_details'),
-    path(route='add_review',view=views.add_review,name='add_review'),
+    path(route='review/<str:dealerId>/<str:dealer_name>',view=views.get_dealer_details,name='dealer_details'),
+    path(route='add_review/<str:dealer_id>/<str:dealer_name>',view=views.add_review,name='add_review'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

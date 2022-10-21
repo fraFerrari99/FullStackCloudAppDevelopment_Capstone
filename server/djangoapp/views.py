@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
+from .models import CarMake, CarModel
 from .restapis import *
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -97,32 +97,55 @@ def get_dealer_id(request,dealer_id):
         else:
             return HttpResponse("<h1>No dealer with that id!</h1>")
 
-def get_dealer_details(request,dealerId):
+def get_dealer_details(request,dealerId,dealer_name):
     if request.method == "GET":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/review-package/get-review.json?dealerId="+dealerId
         dealer_review = get_dealer_reviews_from_cf(url, dealerId)
-        return render(request,"djangoapp/dealer_details.html",context={"reviews":dealer_review,"dealerId":dealerId})
+        return render(request,"djangoapp/dealer_details.html",context={"reviews":dealer_review,"dealerId":dealerId,"dealer_name":dealer_name})
+    if request.method == "POST":
+        username = request.POST["username"]
+        pwd = request.POST["pwd"]
+        user = authenticate(username=username,password=pwd)
+        if user is not None:
+            login(request,user)
+            return redirect("djangoapp:dealer_details",dealerId=dealerId,dealer_name=dealer_name)
+        else:
+            context["message"]="Invalid username or password"
+            return render(request,"djangoapp/dealer_details.html",context)
 
 
-def add_review(request):
+def add_review(request,dealer_id,dealer_name):
     if request.method == "POST" and "login" not in request.POST:
             review = {}
-            review["id"] = request.POST["id"]
-            review["name"] = request.POST["name"]
-            review["dealership"] = request.POST["dealership"]
-            review["review"] = request.POST["review"]
-            review["car_make"] = request.POST["car_make"]
-            review["car_model"] = request.POST["car_model"]
-            review["car_year"] = request.POST["car_year"]
-            review["purchase"] = request.POST["purchase"]
-            review["purchase_date"] =  request.POST["purchase_date"]
-            review["another"] = request.POST["another"]
+            form = request.POST
+            name = request.user.first_name + " " + request.user.last_name
+            review["name"] = name
+            review["dealership"] = dealer_id
+            review["review"] = form["content"]
+            review["purchase"] = form.get("purchasecheck")
+            if review["purchase"]:
+                review["purchase_date"] = datetime.strptime(form.get("purchasedate"),"%d/%m/%Y").isoformat()
+            else:
+                review["purchase_date"] = None
+
+            car_id = form["car"]
+            car = CarModel.objects.get(pk=car_id)
+            review["car_make"] = car.car_make.name
+            review["car_model"] = car.name
+            review["car_year"] = str(car.year.year)
+
             json_payload = {}
             json_payload["review"] = review
+            print(json_payload)
             url = "https://eu-de.functions.appdomain.cloud/api/v1/web/francesco_ferrari_francescofer_space/review-package/post-review.json"
-            status_code = post_request(url, json_payload)
-            return render(request,"djangoapp/add_review.html",context={"status_code":status_code})
-    else: 
-        return render(request,"djangoapp/add_review.html")
+            status_code = post_request(url, json_payload,dealerId=dealer_id)
+            return redirect("djangoapp:dealer_details",dealerId=dealer_id,dealer_name=dealer_name)
+    elif request.method == "GET":
+        try:
+            cars = CarModel.objects.filter(dealer_id=dealer_id)
+        except CarModel.DoesNotExist:
+            return HttpResponse("No cars for that dealer id!")
+
+        return render(request,"djangoapp/add_review.html",context={"cars":cars,"dealer_id":dealer_id,"dealer_name":dealer_name})
 
 
